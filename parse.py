@@ -1,21 +1,22 @@
+import requests
+import time
+import pickle
 from bs4 import BeautifulSoup
 from fake_headers import Headers
 from fake_useragent import UserAgent
 from selenium import webdriver
-import requests
-import time
-import pickle
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from metro import load_metro_points_from_json, distance_haversine, find_nearest
 
 avito_link = 'https://www.avito.ru/sankt-peterburg/kvartiry/apartamenty-studiya_242m_529et._3712328205'
 # address_str = 'Санкт-Петербург, Пулковское ш., 14'
-useragent = UserAgent()
+# useragent = UserAgent()
 
 options = webdriver.ChromeOptions()
-options.add_argument(f'user-agent={useragent.random}')
+# options.add_argument(f'user-agent={useragent.random}')
 options.add_experimental_option("useAutomationExtension", False)
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 driver = webdriver.Chrome(
@@ -66,8 +67,9 @@ try:
             .until(EC.presence_of_element_located(
             (By.XPATH, "//div[@class='toponym-card-title-view__coords-badge']")))
         coordinates = finding_coordinates.text
-        lat = coordinates.split(', ')[0] # широта
-        long = coordinates.split(', ')[1] # долгота
+        lat = float(coordinates.split(', ')[0]) # широта
+        long = float(coordinates.split(', ')[1]) # долгота
+        result_coordinates = (lat, long)
         print('Координаты: ', lat, long)
     except:
         print('На странице нет координат!')
@@ -79,3 +81,18 @@ except Exception as e:
 finally:
     driver.close()
     driver.quit()
+
+'''Метро'''
+try:
+    msk_longitude_points = [37.309285, 37.898638]
+    spb_longitude_points = [30.229404, 30.554705]
+    if spb_longitude_points[0] <= long <= spb_longitude_points[1]:
+        metro_stations = load_metro_points_from_json('spb_subway_stations.json')
+    elif msk_longitude_points[0] <= long <= msk_longitude_points[1]:
+        metro_stations = load_metro_points_from_json('msk_subway_stations.json')
+    else:
+        print('Неверный город!')
+    nearest_station = find_nearest(result_coordinates, metro_stations)
+    print('Ближайшее метро: ', nearest_station)
+except Exception as e:
+    print(e)
