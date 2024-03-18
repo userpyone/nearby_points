@@ -74,8 +74,6 @@ try:
     except:
         print('На странице нет координат!')
 
-    time.sleep(5)
-
 except Exception as e:
     print(e)
 finally:
