@@ -25,6 +25,9 @@ def find_nearest(point_1: tuple, points: dict):
             'dist_coef': 3 if dist <= 1.0 else 2 if dist < 2.0 else 1}
     return result['name']
 
+def get_coordinates_from_name(name, set):
+    return set[name]
+
 # Test
 # point_1 = (59.831721, 30.327388)
 # metro_points = load_metro_points_from_json('spb_subway_stations.json')
@@ -36,3 +39,8 @@ def find_nearest(point_1: tuple, points: dict):
 #     'Перово': (55.75098, 37.78422),
 #     'Ховрино': (55.8777, 37.4877),
 #     }
+
+# Get metro coordinates from name
+# coordinates_metro = get_coordinates_from_name('Девяткино', load_metro_points_from_json('spb_subway_stations.json'))
+# lat_metro = coordinates_metro[0]
+# long_metro = coordinates_metro[1]
