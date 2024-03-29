@@ -14,20 +14,21 @@ from selenium.webdriver.support import expected_conditions as EC
 from metro import (load_metro_points_from_json,
                    distance_haversine,
                    find_nearest,
-                   get_coordinates_from_name)
+                   get_coordinates_from_station_name)
+from geo import get_coordinates_by_address
 
-avito_link = 'https://www.avito.ru/sankt-peterburg/kvartiry/apartamenty-studiya_24m_718et._3513735552'
+avito_link = 'https://www.avito.ru/sankt-peterburg/kvartiry/kvartira-studiya_45m_1624et._3678667511'
 start_address = 'Москва, улица Шумилова, 24А'
 
+hdr = {'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'}
 useragent = UserAgent()
 options = webdriver.ChromeOptions()
-options.add_argument(f'user-agent={useragent.random}')
+# options.add_argument(f'user-agent={useragent.random}')
 options.add_experimental_option("useAutomationExtension", False)
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 driver = webdriver.Chrome(
     executable_path=r'C:\Users\ES\PycharmProjects\rent_bot\chromedriver\chromedriver.exe',
     options=options)
-
 
 def get_ways_to_move(driver):
     try:
@@ -66,83 +67,38 @@ def get_avito_price(driver, avito_link):
     except Exception as e:
         print('Ошибка при получении цены с авито!', e)
 
-def get_coordinates_from_address(driver, address):
+def get_nearest_metro(home_coordinates):
     try:
-        '''Получение координат по адресу'''
-        driver.get(url='https://yandex.ru/maps/geo/rossiya/53000001/')
-
-        # Загрузка cookies
-        for cookie in pickle.load(open('cookies.pkl', 'rb')):
-            driver.add_cookie(cookie)
-
-        # Закрытие баннера (в темной теме)
-        try:
-            close_ad = driver.find_element(By.XPATH, "//a[@class='s3110cd67']")
-            close_ad.click()
-        except Exception:
-            print('Баннер не закрыт')
-
-        # Ввод адреса в поиск
-        input_address = WebDriverWait(driver, 10) \
-            .until(EC.presence_of_element_located(
-            (By.XPATH, "//input[@class='input__control _bold']")))
-        input_address.send_keys(address)
-
-        # input_address.send_keys(Keys.ENTER)
-        time.sleep(1)
-        # elem_first_list = WebDriverWait(driver, 10) \
-        #     .until(EC.presence_of_element_located(
-        #     (By.XPATH, "//div[@class='search-snippet-view__body _type_toponym']")))
-        elem_first_list = driver.find_element(By.CLASS_NAME, "suggest-item-view")
-        elem_first_list.click()
-
-        # Поиск координат на сайте
-        try:
-            finding_coordinates = WebDriverWait(driver, 5) \
-                .until(EC.presence_of_element_located(
-                (By.XPATH, "//div[@class='toponym-card-title-view__coords-badge']")))
-            coordinates = finding_coordinates.text
-            lat_home = float(coordinates.split(', ')[0]) # широта
-            long_home = float(coordinates.split(', ')[1]) # долгота
-            result_coordinates = (lat_home, long_home)
-            return result_coordinates
-        except Exception as e:
-            print('На странице нет координат!', e)
-    except Exception as e:
-        print('Ошибка при получении координат!', e)
-
-def get_nearest_metro(result_coordinates):
-    try:
-        long_home = result_coordinates[1]
+        lon_home = home_coordinates['lon']
         msk_longitude_points = [37.309285, 37.898638]
         spb_longitude_points = [30.229404, 30.554705]
-        if spb_longitude_points[0] <= long_home <= spb_longitude_points[1]:
+        if spb_longitude_points[0] <= lon_home <= spb_longitude_points[1]:
             metro_stations = load_metro_points_from_json('spb_subway_stations.json')
-        elif msk_longitude_points[0] <= long_home <= msk_longitude_points[1]:
+        elif msk_longitude_points[0] <= lon_home <= msk_longitude_points[1]:
             metro_stations = load_metro_points_from_json('msk_subway_stations.json')
         else:
             print('Неверный город!')
-        nearest_station = find_nearest(result_coordinates, metro_stations)
+        nearest_station = find_nearest((home_coordinates['lat'], home_coordinates['lon']),
+                                       metro_stations)
         return nearest_station, get_metro_coordinates(nearest_station, metro_stations)
     except Exception as e:
         print('Ошибка при получении ближайшего метро!', e)
+        exception_traceback = traceback.format_exc()
+        print(exception_traceback)
 
 def get_metro_coordinates(nearest_station, metro_stations):
     try:
-        coordinates_metro = get_coordinates_from_name(str(nearest_station), metro_stations)
-        # lat_metro = coordinates_metro[0]
-        # long_metro = coordinates_metro[1]
+        coordinates_metro = get_coordinates_from_station_name(str(nearest_station), metro_stations)
         return coordinates_metro
     except Exception as e:
         print('Ошибка при получении координат метро!', e)
 
-
-def get_time_from_home_to_metro(driver, lat_home, long_home, lat_metro, long_metro):
+def get_time_from_home_to_metro(driver, lat_home, lon_home, lat_metro, lon_metro):
     try:
         home_to_metro_link = (f'https://yandex.ru/maps/2/saint-petersburg/'
                               f'?ll=30.376538%2C59.869593&mode=routes&'
-                              f'rtext={str(lat_home)}%2C{str(long_home)}~'
-                              f'{str(lat_metro)}%2C{str(long_metro)}&rtt=comparison')
+                              f'rtext={str(lat_home)}%2C{str(lon_home)}~'
+                              f'{str(lat_metro)}%2C{str(lon_metro)}&rtt=comparison')
 
         driver.get(home_to_metro_link)
         '''Время от дома до метро'''
@@ -156,27 +112,53 @@ def get_time_from_home_to_metro(driver, lat_home, long_home, lat_metro, long_met
     except Exception as e:
         print('Ошибка при получении времени от дома до метро!', e)
 
-'''РЕЗУЛЬТАТЫ'''
+def get_home_photo(lat, lon, headers):
+    link = f'https://2gis.ru/geo/{lat}%2C{lon}?m={lat}%2C{lon}%2F17%2Fp%2F0.04'
+    driver.get(link)
+    time.sleep(1)
+    click_on_photo = driver.find_element(By.CLASS_NAME, "_1dk5lq4")
+    click_on_photo.click()
+    try:
+        time.sleep(1)
+        url = driver.find_element(By.XPATH, '//*[@id="photoViewer"]/div/div/div[2]/div[1]/div[1]/div/img').get_attribute('src')
+        print(url)
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req) as response, open('image.png', 'wb') as out_file:
+                data = response.read()
+                out_file.write(data)
+            print("Изображение успешно загружено.")
+        except urllib.error.HTTPError as e:
+            print("Не удалось загрузить изображение. Код ошибки:", e.code)
+    except NoSuchElementException:
+        print('Элемент не найден')
 
-home_address = get_avito_address(driver, avito_link)
-home_price = get_avito_price(driver, avito_link)
-print(f'Адрес дома: {home_address}')
-print(f'Стоимость квартиры: {home_price}')
-home_coordinates = get_coordinates_from_address(driver, home_address)
-lat_home = home_coordinates[0]
-long_home = home_coordinates[1]
-print('Координаты квартиры:', home_coordinates)
-nearest_metro, metro_coordinates = get_nearest_metro(home_coordinates)
-lat_metro = metro_coordinates[0]
-long_metro = metro_coordinates[1]
-print(f'Ближайшее метро: {nearest_metro}')
-print(f'Координаты метро: {metro_coordinates}')
-ways_from_home_to_metro_dict = get_time_from_home_to_metro(driver,
-                                                           lat_home,
-                                                           long_home,
-                                                           lat_metro,
-                                                           long_metro)
-print(ways_from_home_to_metro_dict)
+'''РЕЗУЛЬТАТЫ'''
+try:
+    home_address = get_avito_address(driver, avito_link)
+    home_price = get_avito_price(driver, avito_link)
+    print(f'Адрес дома: {home_address}')
+    print(f'Стоимость квартиры: {home_price}')
+    home_coordinates = get_coordinates_by_address(home_address)
+    lat_home = home_coordinates['lat']
+    lon_home = home_coordinates['lon']
+    print('Координаты квартиры:', home_coordinates)
+    nearest_metro, metro_coordinates = get_nearest_metro(home_coordinates)
+    lat_metro = metro_coordinates[0]
+    lon_metro = metro_coordinates[1]
+    print(f'Ближайшее метро: {nearest_metro}')
+    print(f'Координаты метро: {metro_coordinates}')
+    ways_from_home_to_metro_dict = get_time_from_home_to_metro(driver,
+                                                               lat_home,
+                                                               lon_home,
+                                                               lat_metro,
+                                                               lon_metro)
+    print(ways_from_home_to_metro_dict)
+    '''Фото дома'''
+    # get_home_photo(lat_home, lon_home, hdr)
+except Exception as e:
+    exception_traceback = traceback.format_exc()
+    print(exception_traceback)
 
 driver.close()
 driver.quit()
