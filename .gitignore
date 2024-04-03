@@ -1,7 +1,11 @@
 # Files
 .env
-.pkl
+*.pkl
 # Folders
+__pycache__/
+cache/
 .venv
-/chromedriver
-/data
+chromedriver/
+data/
+# JetBrains IDEs
+.idea/
