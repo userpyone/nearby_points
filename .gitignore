@@ -1,0 +1,7 @@
+# Files
+.env
+.pkl
+# Folders
+.venv
+/chromedriver
+/data

@@ -3,6 +3,7 @@ import requests
 import time
 import traceback
 import pickle
+import urllib.request
 from bs4 import BeautifulSoup
 from fake_headers import Headers
 from fake_useragent import UserAgent
@@ -11,6 +12,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 from metro import (load_metro_points_from_json,
                    distance_haversine,
                    find_nearest,
@@ -18,16 +20,16 @@ from metro import (load_metro_points_from_json,
 from geo import get_coordinates_by_address
 
 avito_link = 'https://www.avito.ru/sankt-peterburg/kvartiry/kvartira-studiya_45m_1624et._3678667511'
-start_address = 'Москва, улица Шумилова, 24А'
 
-hdr = {'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'}
+header = Headers()
+# hdr = {'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36'}
 useragent = UserAgent()
 options = webdriver.ChromeOptions()
 # options.add_argument(f'user-agent={useragent.random}')
 options.add_experimental_option("useAutomationExtension", False)
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 driver = webdriver.Chrome(
-    executable_path=r'C:\Users\ES\PycharmProjects\rent_bot\chromedriver\chromedriver.exe',
+    executable_path=r'chromedriver\chromedriver.exe',
     options=options)
 
 def get_ways_to_move(driver):
@@ -73,9 +75,9 @@ def get_nearest_metro(home_coordinates):
         msk_longitude_points = [37.309285, 37.898638]
         spb_longitude_points = [30.229404, 30.554705]
         if spb_longitude_points[0] <= lon_home <= spb_longitude_points[1]:
-            metro_stations = load_metro_points_from_json('spb_subway_stations.json')
+            metro_stations = load_metro_points_from_json('data/subway_stations/spb_subway_stations.json')
         elif msk_longitude_points[0] <= lon_home <= msk_longitude_points[1]:
-            metro_stations = load_metro_points_from_json('msk_subway_stations.json')
+            metro_stations = load_metro_points_from_json('data/subway_stations/msk_subway_stations.json')
         else:
             print('Неверный город!')
         nearest_station = find_nearest((home_coordinates['lat'], home_coordinates['lon']),
@@ -93,15 +95,15 @@ def get_metro_coordinates(nearest_station, metro_stations):
     except Exception as e:
         print('Ошибка при получении координат метро!', e)
 
-def get_time_from_home_to_metro(driver, lat_home, lon_home, lat_metro, lon_metro):
+def get_time_from_point_to_point(driver, lat_from, lon_from, lat_to, lon_to):
     try:
-        home_to_metro_link = (f'https://yandex.ru/maps/2/saint-petersburg/'
+        point_to_point_link = (f'https://yandex.ru/maps/2/saint-petersburg/'
                               f'?ll=30.376538%2C59.869593&mode=routes&'
-                              f'rtext={str(lat_home)}%2C{str(lon_home)}~'
-                              f'{str(lat_metro)}%2C{str(lon_metro)}&rtt=comparison')
+                              f'rtext={str(lat_from)}%2C{str(lon_from)}~'
+                              f'{str(lat_to)}%2C{str(lon_to)}&rtt=comparison')
 
-        driver.get(home_to_metro_link)
-        '''Время от дома до метро'''
+        driver.get(point_to_point_link)
+        '''Время от точки до точки'''
         ways = get_ways_to_move(driver)
         # pedestrian_time = ways['Пешком']
         # auto_time = ways['На автомобиле']
@@ -112,26 +114,31 @@ def get_time_from_home_to_metro(driver, lat_home, lon_home, lat_metro, lon_metro
     except Exception as e:
         print('Ошибка при получении времени от дома до метро!', e)
 
-def get_home_photo(lat, lon, headers):
-    link = f'https://2gis.ru/geo/{lat}%2C{lon}?m={lat}%2C{lon}%2F17%2Fp%2F0.04'
+def get_home_photo(address, headers):
+    link = 'https://2gis.ru/'
     driver.get(link)
+    input_address = WebDriverWait(driver, 10) \
+        .until(EC.presence_of_element_located(
+        (By.XPATH, '//*[@id="root"]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div/div/div/div/div[2]/form/div/input')))
+    input_address.send_keys(address)
+    input_address.send_keys(Keys.ENTER)
     time.sleep(1)
     click_on_photo = driver.find_element(By.CLASS_NAME, "_1dk5lq4")
     click_on_photo.click()
     try:
-        time.sleep(1)
+        time.sleep(2)
         url = driver.find_element(By.XPATH, '//*[@id="photoViewer"]/div/div/div[2]/div[1]/div[1]/div/img').get_attribute('src')
         print(url)
         req = urllib.request.Request(url, headers=headers)
         try:
-            with urllib.request.urlopen(req) as response, open('image.png', 'wb') as out_file:
+            with urllib.request.urlopen(req) as response, open('data/images/image.png', 'wb') as out_file:
                 data = response.read()
                 out_file.write(data)
             print("Изображение успешно загружено.")
         except urllib.error.HTTPError as e:
             print("Не удалось загрузить изображение. Код ошибки:", e.code)
     except NoSuchElementException:
-        print('Элемент не найден')
+        print('На странице нет фото')
 
 '''РЕЗУЛЬТАТЫ'''
 try:
@@ -148,14 +155,14 @@ try:
     lon_metro = metro_coordinates[1]
     print(f'Ближайшее метро: {nearest_metro}')
     print(f'Координаты метро: {metro_coordinates}')
-    ways_from_home_to_metro_dict = get_time_from_home_to_metro(driver,
+    ways_from_home_to_metro_dict = get_time_from_point_to_point(driver,
                                                                lat_home,
                                                                lon_home,
                                                                lat_metro,
                                                                lon_metro)
-    print(ways_from_home_to_metro_dict)
+    print('Время до метро:', ways_from_home_to_metro_dict)
     '''Фото дома'''
-    # get_home_photo(lat_home, lon_home, hdr)
+    get_home_photo(home_address, header.generate())
 except Exception as e:
     exception_traceback = traceback.format_exc()
     print(exception_traceback)

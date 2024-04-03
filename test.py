@@ -1,9 +1,9 @@
 import urllib.request
-
+import json
 import fake_headers
 from fake_headers import Headers
 from fake_useragent import UserAgent
-useragent = UserAgent()
+# useragent = UserAgent()
 # import json
 # filename = 'spb_subway_stations.json'
 # with open(filename, 'r', encoding='utf-8') as f:
@@ -48,5 +48,15 @@ url = 'https://i5.photo.2gis.com/images/geo/0/30258560110064734_72f9.jpg'
 # except urllib.error.HTTPError as e:
 #     print("Не удалось загрузить изображение. Код ошибки:", e.code)
 
-print(fake_headers.random_browser())
-print(useragent.random)
+# print(fake_headers.random_browser())
+# print(useragent.random)
+
+# def get_number_by_district(district):
+#     with open('data/districts/spb_districts.json', encoding='utf-8') as json_file:
+#         data = json.load(json_file)
+#     for item in data:
+#         if item["district"] == district:
+#             return item["number"]
+# district = "Адмиралтейский"
+# number = get_number_by_district(district)
+# print(number)

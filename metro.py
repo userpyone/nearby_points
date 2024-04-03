@@ -25,7 +25,7 @@ def find_nearest(point_1: tuple, points: dict):
             'dist_coef': 3 if dist <= 1.0 else 2 if dist < 2.0 else 1}
     return result['name']
 
-def get_coordinates_from_name(name, set):
+def get_coordinates_from_station_name(name, set):
     return set[name]
 
 # Test

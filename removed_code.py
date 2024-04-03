@@ -51,3 +51,26 @@ def get_coordinates_by_address(address):
                 'lon': round(location.longitude, 6)}
     else:
         print('Location is None!')
+
+
+def get_home_photo(lat, lon, headers):
+    link = f'https://2gis.ru/geo/{lon}%2C{lat}?m={lon}%2C{lat}%2F17%2Fp%2F0.04'
+    driver.get(link)
+    time.sleep(1)
+    click_on_photo = driver.find_element(By.CLASS_NAME, "_1dk5lq4")
+    click_on_photo.click()
+    try:
+        time.sleep(1)
+        url = driver.find_element(By.XPATH,
+                                  '//*[@id="photoViewer"]/div/div/div[2]/div[1]/div[1]/div/img').get_attribute('src')
+        print(url)
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req) as response, open('image.png', 'wb') as out_file:
+                data = response.read()
+                out_file.write(data)
+            print("Изображение успешно загружено.")
+        except urllib.error.HTTPError as e:
+            print("Не удалось загрузить изображение. Код ошибки:", e.code)
+    except NoSuchElementException:
+        print('Элемент не найден')
