@@ -3,23 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Моя главная страница</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <title>Main Page</title>
+  <link rel="stylesheet" href="/static/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='img/fav-main.png') }}" type="image/png">
 </head>
 <body>
+  {% if error %}
+    <div id="error-message" class="error-message">{{ error }}</div>
+  {% endif %}
   <div class="container">
-    <h1>Квартиры</h1>
-    <h2>Москвы и Санкт-Петербурга с <a href="https://www.avito.ru/sankt-peterburg/nedvizhimost" class="avitolink"target="_blank">avito.ru</a></h2>
+    <h1>Ближайшая инфраструктура</h1>
+    <h2>по любому адресу 🌍</h2>
     <div class="input-box">
-      <form action="/process_form" method="post">
-            <input type="text" name="user_input" class="input-text" placeholder="Введите ссылку...">
-            <button type="submit" class="submit-button">🚀</button>
+      <form id="userForm" action="{{ url_for('process_form') }}" method="POST">
+            <input type="text" name="user_input" class="input-text" placeholder="Санкт-Петербург, Кронверкский проспект, д.49">
+            <button type="submit" onclick="showLoader()" class="submit-button">🚀</button>
         </form>
     </div>
+    <span id="loader" class="loader"></span>
+    <script>
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            hideErrorMessage();
+        }
+
+        function hideErrorMessage() {
+            var errorMessage = document.getElementById('error-message');
+            if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+        }
+    </script>
   </div>
 <div class="footer">
       <a href="https://github.com/">
-    <img src="{{ url_for('static', filename='img/git_logo.png') }}">
+    <img src="/static/img/git_logo.png">
   </a>
 </div>
 </body>

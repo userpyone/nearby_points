@@ -1,11 +1,15 @@
 # Files
 .env
 *.pkl
+parse_test.py
+speedtest.py
 # Folders
 __pycache__/
 cache/
-.venv
+.venv/
 chromedriver/
-data/
+static/img/
+test site/
+flask_session/
 # JetBrains IDEs
 .idea/
