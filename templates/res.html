@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ address }}</title>
+    <link rel="stylesheet" href="/static/res.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='img/fav-res.png') }}" type="image/png">
+</head>
+<body>
+<div class="header">
+    <h1>{{ address }}</h1>
+</div>
+<div class="district-container">
+    <div class="district">
+        <h3>{{ data1 }}<br>{{ data2 }}</h3>
+        <h4>
+            Объекты в радиусе от дома
+            <div class="number-container">
+                <select>
+                    <option>500м</option>
+                    <option selected>1000м</option>
+                    <option>2000м</option>
+                </select>
+            </div>
+        </h4>
+    </div>
+    <img src="/static/img/img1.png" class="district-img">
+</div>
+
+<img src="/static/img/radius_arrow.png" class="radius-img">
+<img src="/static/img/dist_arrow.png" class="dist-img">
+
+<div class="container">
+        <div class="column">
+           <div class="item">
+                <span>Супермаркеты</span><span class="value">{{ v1 }}</span>
+            </div>
+            <div class="item">
+                <span>Пекарни</span><span class="value">{{ v2 }}</span>
+            </div>
+            <div class="item">
+                <span>Кафе</span><span class="value">{{ v3 }}</span>
+            </div>
+            <div class="item">
+                <span>Торговые центры</span><span class="value">{{ v4 }}</span>
+            </div>
+            <div class="item">
+                <span>Пункты выдачи</span><span class="value">{{ v5 }}</span>
+            </div>
+            <div class="item">
+                <span>Магазины техники</span><span class="value">{{ v6 }}</span>
+            </div>
+            <div class="item">
+                <span>Школы</span><span class="value">{{ v7 }}</span>
+            </div>
+            <div class="item">
+                <span>Детские сады</span><span class="value">{{ v8 }}</span>
+            </div>
+            {% if v9|int != 0 %}
+            <div class="item">
+                <span>Больницы</span><span class="value">{{ v9 }}</span>
+            </div>
+            {% endif %}
+            <div class="item">
+                <span>Аптеки</span><span class="value">{{ v10 }}</span>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="item">
+                <span>Банки</span><span class="value">{{ v11 }}</span>
+            </div>
+            <div class="item">
+                <span>Библиотеки</span><span class="value">{{ v12 }}</span>
+            </div>
+            <div class="item">
+                <span>Кинотеатры</span><span class="value">{{ v13 }}</span>
+            </div>
+            <div class="item">
+                <span>Театры</span><span class="value">{{ v14 }}</span>
+            </div>
+            <div class="item">
+                <span>Спортивные центры</span><span class="value">{{ v15 }}</span>
+            </div>
+            <div class="item">
+                <span>Спортивные залы</span><span class="value">{{ v16 }}</span>
+            </div>
+            <div class="item">
+                <span>Стадионы</span><span class="value">{{ v17 }}</span>
+            </div>
+            <div class="item">
+                <span>Бассейны</span><span class="value">{{ v18 }}</span>
+            </div>
+            <div class="item">
+                <span>Тратуары</span><span class="value">{{ v19 }}</span>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="item">
+                <span>Велодорожки</span><span class="value">{{ v20 }}</span>
+            </div>
+            <div class="item">
+                <span>Станции метро</span><span class="value">{{ v21 }}</span>
+            </div>
+            <div class="item">
+                <span>Автобусные остановки</span><span class="value">{{ v22 }}</span>
+            </div>
+            <div class="item">
+                <span>Парковки</span><span class="value">{{ v23 }}</span>
+            </div>
+            <div class="item">
+                <span>Подземные парковки</span><span class="value">{{ v24 }}</span>
+            </div>
+            <div class="item">
+                <span>Велосипедные парковки</span><span class="value">{{ v25 }}</span>
+            </div>
+            <div class="item">
+                <span>Парки</span><span class="value">{{ v26 }}</span>
+            </div>
+            <div class="item">
+                <span>Водоемы</span><span class="value">{{ v27 }}</span>
+            </div>
+            <div class="item">
+                <span>Массивы деревьев</span><span class="value">{{ v28 }}</span>
+            </div>
+        </div>
+</div>
+</body>
+</html>

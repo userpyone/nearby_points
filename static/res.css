@@ -1,0 +1,182 @@
+body {
+    font-family: "Comfortaa", cursive;
+    font-style: bold;
+    margin: 0;
+    padding: 0;
+    background-image: url('img/bg-darken.png');
+    background-size: cover;
+}
+
+.header h1 {
+    color: black;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 22px;
+    font-weight: normal;
+    max-width: 500px;
+    margin-top: 20px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.district-img {
+    position: absolute;
+    left: 4%;
+    top: 25%;
+    border-radius: 40px;
+    border: 2px solid white;
+    width: 310px;
+    height: auto;
+    margin-bottom: 60px;
+    transition: 0.2s;
+}
+
+.district-img:hover {
+    transform: scale(1.05);
+}
+
+h3 {
+    position: absolute;
+    left: 4%;
+    top: 62%;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.5);
+    font-size: 24px;
+    font-weight: normal;
+    line-height: 1.5;
+    padding: 5px;
+    border-radius: 34px;
+    border: 2px solid white;
+    min-width: 300px;
+    max-width: 370px;
+    min-height: 115px;
+    max-height: 170px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 32px;
+    margin-top: 58px;
+    user-select: none;
+    transition: 0.2s;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+h3:hover {
+    transform: scale(1.05);
+}
+
+h4 {
+    position: absolute;
+    left: 30%;
+    top: 20%;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.5);
+    font-size: 25px;
+    font-weight: normal;
+    line-height: 1.2;
+    padding: 10px;
+    border-radius: 34px;
+    border: 2px solid white;
+    font-family: "Comfortaa";
+}
+
+.number-container {
+    position: absolute;
+    top: 0;
+    right: -30%;
+    width: 100px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 34px;
+    border: 2px solid white;
+    background-color: rgba(255, 255, 255, 0.7);
+    font-family: "Comfortaa";
+    transition: 0.2s;
+}
+
+.number-container:hover {
+    background-color: rgba(130, 224, 170, 0.7);
+}
+
+.number-container select {
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    appearance: none;
+    padding: 0 5px;
+    font-family: "Comfortaa";
+}
+
+.number-container select:focus,
+.number-container select:active {
+    outline: none;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 28%;
+    left: 30%;
+    width: 80%;
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 2px solid white;
+    border-radius: 30px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+}
+
+.column {
+    width: calc(33.33% - 13.33px);
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+}
+
+.item span:first-child {
+    flex-grow: 1;
+}
+
+.item:not(:last-child) {
+    border-bottom: 1px solid #9C9C9C;
+}
+
+.value {
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.radius-img {
+    position: absolute;
+    top: 18%;
+    left: 66%;
+    width: 100px;
+    height: auto;
+    user-select: none;
+    pointer-events: none;
+}
+
+.dist-img {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 100px;
+    height: auto;
+    user-select: none;
+    pointer-events: none;
+}

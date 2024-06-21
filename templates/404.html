@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Not found</title>
+    <link rel="stylesheet" href="/static/404.css">
+    <link rel="icon" href="{{ url_for('static', filename='img/fav-404.png') }}" type="image/png">
+</head>
+<body>
+<div class="container">
+    <h1 class="text">404</h1>
+        <form action="/redirect" method="get">
+            <button class="button">На главную</button>
+        </form>
+</div>
+</body>
+</html>

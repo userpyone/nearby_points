@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Моя главная страница</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Квартиры</h1>
+    <h2>Москвы и Санкт-Петербурга с <a href="https://www.avito.ru/sankt-peterburg/nedvizhimost" class="avitolink"target="_blank">avito.ru</a></h2>
+    <div class="input-box">
+      <form action="/process_form" method="post">
+            <input type="text" name="user_input" class="input-text" placeholder="Введите ссылку...">
+            <button type="submit" class="submit-button">🚀</button>
+        </form>
+    </div>
+  </div>
+<div class="footer">
+      <a href="https://github.com/">
+    <img src="{{ url_for('static', filename='img/git_logo.png') }}">
+  </a>
+</div>
+</body>
+</html>
