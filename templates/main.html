@@ -11,37 +11,58 @@
   <link rel="icon" href="{{ url_for('static', filename='img/fav-main.png') }}" type="image/png">
 </head>
 <body>
-  {% if error %}
-    <div id="error-message" class="error-message">{{ error }}</div>
-  {% endif %}
-  <div class="container">
-    <h1>Ближайшая инфраструктура</h1>
-    <h2>по любому адресу 🌍</h2>
-    <div class="input-box">
-      <form id="userForm" action="{{ url_for('process_form') }}" method="POST">
-            <input type="text" name="user_input" class="input-text" placeholder="Санкт-Петербург, Кронверкский проспект, д.49">
-            <button type="submit" onclick="showLoader()" class="submit-button">🚀</button>
-        </form>
-    </div>
-    <span id="loader" class="loader"></span>
-    <script>
-        function showLoader() {
-            document.getElementById('loader').style.display = 'block';
-            hideErrorMessage();
-        }
 
-        function hideErrorMessage() {
-            var errorMessage = document.getElementById('error-message');
-            if (errorMessage) {
-                errorMessage.style.display = 'none';
-            }
+  <div class="container">
+    <div class="error-container">
+      {% if error %}
+        <div id="error-message" class="error-message">{{ error }}</div>
+      {% endif %}
+    </div>
+    <h1>Ближайшие объекты<br>по любому адресу 🌍</h1>
+
+    <div class="input-box">
+    <form id="userForm" action="{{ url_for('process_form') }}" method="POST" onsubmit="return validateForm()">
+        <input type="text" id="user_input" name="user_input" class="input-text" placeholder="Санкт-Петербург, Кронверкский проспект, д.49" value="{{ user_input if user_input else '' }}">
+        <button type="submit" class="submit-button">🚀</button>
+    </form>
+</div>
+
+<div class="loader-container">
+    <span id="loader" class="loader"></span>
+</div>
+
+<script>
+    function showLoader() {
+        document.getElementById('loader').style.display = 'block';
+        hideErrorMessage();
+    }
+
+    function hideErrorMessage() {
+        var errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
         }
-    </script>
+    }
+
+    function validateForm() {
+        var userInput = document.getElementById('user_input').value.trim();
+        if (userInput === "") {
+            return false;
+        } else {
+            showLoader();
+            return true;
+        }
+    }
+</script>
+
+
   </div>
+
 <div class="footer">
-      <a href="https://github.com/">
+  <a href="https://github.com/">
     <img src="/static/img/git_logo.png">
   </a>
 </div>
+
 </body>
 </html>
